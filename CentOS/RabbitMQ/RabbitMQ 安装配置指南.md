@@ -86,6 +86,7 @@ rabbitmqctl  set_user_tags  hncscwc  monitoring  policymaker
 设置用户权限
 
 rabbitmqctl  set_permissions  -p  VHostPath  User  ConfP  WriteP  ReadP
+
 {
 	VHostPath  Vhost名字
 
