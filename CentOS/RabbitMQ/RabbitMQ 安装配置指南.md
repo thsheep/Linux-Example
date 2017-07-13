@@ -12,9 +12,9 @@ RabbitMQ 3.6.10版本需要Erlang 19.0.
 
 安装RabbitMQ：
 
-1、RabbitMQ依赖于socat
-	 [root@localhost ~]# yum install socat (此包没有依赖，可以下载rpm安装)
-2、[root@localhost ~]# rpm -ivh rabbitmq-server-3.6.10-1.el7.noarch.rpm
+RabbitMQ依赖于socat
+[root@localhost ~]# yum install socat (此包没有依赖，可以下载rpm安装)
+[root@localhost ~]# rpm -ivh rabbitmq-server-3.6.10-1.el7.noarch.rpm
 
 
 开启Web UI界面：
