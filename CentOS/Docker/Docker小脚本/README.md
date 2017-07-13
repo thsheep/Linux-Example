@@ -1,0 +1,1 @@
+docker_rm_container.sh ： 删除处于退出状态的容器

@@ -1,0 +1,57 @@
+安装docker:
+yum install -y yum-utils device-mapper-persistent-data lvm2
+yum-config-manager \
+    --add-repo \
+    https://download.docker.com/linux/centos/docker-ce.repo
+yum makecache fast
+yum install -y docker-ce
+安装加速器
+curl -sSL https://get.daocloud.io/daotools/set_mirror.sh | sh -s http://8050f360.m.daocloud.io 
+systemctl start docker
+systemctl enable docker
+
+配置文件在/etc/docker/*下面
+
+
+
+#################################################
+配置基于Pycharm使用Docker环境
+
+1、运行Docker的服务器上安装docker-compose
+
+   curl -L https://github.com/docker/compose/releases/download/$dockerComposeVersion/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
+
+   $dockerComposeVersion为需要安装的版本号: 具体版本号请在此处查看：https://github.com/docker/compose/releases
+
+
+2、修改docker.service文件：
+	使用systemctl status docker查看Docker状态获得docker.service的路径；例如图：Pycharm配置远程Docker-01.png
+
+	[root@localhost ~]# vim /usr/lib/systemd/system/docker.service
+	在ExecStart=/usr/bin/dockerd 后面加上 -H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock 如图：Pycharm配置远程Docker-02.png
+
+	systemctl daemon-reload      #重载service文件
+
+	systemctl restart docker     #重启docker service
+
+	netstat –tulnp | grep docker #查看docker的监听端口
+	[root@localhost ~]# netstat -tulnp | grep docker
+	tcp6       0      0 :::2375                 :::*                    LISTEN      12361/dockerd       #表明正常工作
+
+	如果你的firewalld处于开启状态 需要将2375端口放行
+	firewall-cmd --zone=public --add-port=2375/tcp --permanent #将2375端口永久放行
+	firewall-cmd --reload #重新载入
+
+3、配置Pycharm连接Docker
+	
+	参考图：Pycharm配置远程Docker-03.png
+	只需要设置name 和API URL（默认为TCP  也可以使用http）
+	点击apply 待出现Connection successful 表示链接成功
+
+	拉取一个合适的python Docker镜像 例如获取一个Python3的镜像：
+	docker pull daocloud.io/library/python:3
+
+4、设置Interpreter
+
+	如图：Pycharm配置远程Docker-04.png
+	配置完成后：如图：Pycharm配置远程Docker-05.png
