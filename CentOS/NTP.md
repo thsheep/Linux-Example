@@ -142,3 +142,11 @@ server 10.10.1.251
 3、ntpdate <时间服务器地址>
 
 	ntp自身采用微调的方式调整时间回归正常时间速度很慢，可以使用此命令强制更新时间（需要先关闭NTP服务  systemctl stop ntpd）
+
+
+
+故障处理：
+
+如果ntpd服务开机无法正常启动 需要关闭chronyd
+
+systemctl disable chronyd.service 
