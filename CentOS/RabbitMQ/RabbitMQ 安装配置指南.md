@@ -53,15 +53,24 @@ RabbitMQ依赖于socat
 
 
 放行fireWalld端口：
+
 [root@localhost ~]# firewall-cmd --zone=public --add-port=5672/tcp --permanent （这是RabbitMQ的队列通讯端口）
+
 [root@localhost ~]# firewall-cmd --zone=public --add-port=15672/tcp --permanent （Web服务端口）
+
 [root@localhost ~]# firewall-cmd --reload （重载规则）
 
 启动RabbitMQ节点：
+
 [root@localhost ~]# rabbitmq-server -detached
+
 停止RabbitMQ节点：
+
 [root@localhost ~]# rabbitmqctl stop
 
+加入开机启动项：
+
+[root@localhost ~]# systemctl enable rebbitmq-server
 
 常用命令：
 
