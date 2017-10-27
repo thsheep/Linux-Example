@@ -1,7 +1,8 @@
 启动参数：
-docker run -d -p 8050:8050 --memory=5.0G --restart=always  --name splash       -v /root/proxy-profiles:/etc/splash/proxy-profiles       -v /root/js-profiles:/etc/splash/js-profiles       -v /root/lua_modules:/etc/splash/lua_modules       -v /root/filters:/etc/splash/filters       scrapinghub/splash:master --maxrss 4500
+docker run -d -p 8050:8050 --memory=6.0G --restart=always  --name splash       -v /root/proxy-profiles:/etc/splash/proxy-profiles       -v /root/js-profiles:/etc/splash/js-profiles       -v /root/lua_modules:/etc/splash/lua_modules       -v /root/filters:/etc/splash/filters       scrapinghub/splash:master --maxrss 6000 --max-timeout 3600
 
 安装流程：
+
 对于Scrapy处理Ajax 处理方式当然是同家兄弟Splash比较靠谱！
 
 但是Splash有个很坑爹的毛病就是负载承受相对较小·· 一不留神就GG了·········· 然后也就没有然后了~~！
@@ -46,22 +47,27 @@ sudo yum -y install docker-ce
 # Step 4: 开启Docker服务
 
 sudo service docker start
+
 安装Docker加速器：
 
 curl -sSL https://get.daocloud.io/daotools/set_mirror.sh | sh -s http://8050f360.m.daocloud.io
+
 重启Docker：
 
 systemctl restart docker
+
 这样可以极快的速度拉取镜像。
 
 获取splash最新的docker镜像：
 
 docker pull scrapinghub/splash:master
+
 关闭所有机器防火墙firewalld(网络安全的环境关闭，不安全的环境请放行端口，自行百度):
 
 systemctl disable firewalld
 
 systemctl stop firewalld
+
 创建Splash配置文件目录：
 
 # 存放过滤规则文件的目录
@@ -85,15 +91,23 @@ systemctl stop firewalld
 [root@localhost ~]# pwd
 /root
 [root@localhost ~]# ll
+
 total 4
+
 drwxr-xr-x. 2 root root   25 Sep 26 03:00 filters
+
 drwxr-xr-x. 2 root root    6 Sep 25 21:08 js-profiles
+
 drwxr-xr-x. 2 root root    6 Sep 25 21:08 lua_modules
+
 drwxr-xr-x. 2 root root   32 Sep 25 21:08 proxy-profiles
+
 [root@localhost ~]#
+
 启动Splash：
 
 docker run -d -p 8050:8050 --memory=5.0G --restart=always  --name splash       -v /root/proxy-profiles:/etc/splash/proxy-profiles       -v /root/js-profiles:/etc/splash/js-profiles       -v /root/lua_modules:/etc/splash/lua_modules       -v /root/filters:/etc/splash/filters       scrapinghub/splash:master --maxrss 4500
+
 docker run  启动一个容器
 
 -d 后台启动
@@ -115,9 +129,13 @@ scrapinghub/splash:master  用于启动容器的镜像
 查看容器是否启动：
 
 [root@localhost ~]# docker ps -a
+
 CONTAINER ID        IMAGE                       COMMAND                  CREATED             STATUS              PORTS                              NAMES
+
 1b34f7933095        scrapinghub/splash:master   "python3 /app/bin/..."   4 hours ago         Up 4 hours          5023/tcp, 0.0.0.0:8050->8050/tcp   splash
+
 [root@localhost ~]#
+
 访问Splash是否正常工作：
 
 
@@ -138,60 +156,81 @@ yum install zlib-devel -y
 安装HAproxy：
 
 # 个人喜好 源码放在这个目录
+
 [root@localhost examples]# cd /usr/local/src/
 
 # 安装wget
+
 [root@localhost src]#yum install wget -y
 
 # 下载HAproxy安装包
+
 [root@localhost src]# wget http://www.haproxy.org/download/1.7/src/haproxy-1.7.9.tar.gz
 
 # 解压
+
 [root@localhost src]# tar -zxvf haproxy-1.7.9.tar.gz
 
 # 进入目录
+
 [root@localhost src]# cd haproxy-1.7.9
 
 # 编译
+
 [root@localhost src]# make TARGET=linux2628 PREFIX=/usr/local/haproxy-1.7.9 USE_ZLIB=yes
 
 # 安装
+
 [root@localhost src]# make install 
 
 # 拷贝启动文件到目录
+
 [root@localhost src]# cp /usr/local/sbin/haproxy /usr/sbin/
 
 # 测试版本
+
 [root@localhost src]# haproxy -v
 
 # 拷贝启动文件到启动目录
+
 [root@localhost src]# cp examples/haproxy.init /etc/init.d/haproxy
 
 # 赋予可执行权限
+
 [root@localhost src]# chmod 755 /etc/init.d/haproxy
 
 # 创建配置文件目录
+
 [root@localhost src]# mkdir /etc/haproxy
 
 # 创建数据目录
+
 [root@localhost src]# mkdir /var/lib/haproxy
 
 # 创建运行文件目录
+
 [root@localhost src]# mkdir /var/run/haproxy
 
 # 设置日志
+
 [root@localhost src]# vim /etc/rsyslog.conf
-# 第15行  $ModLoad imudp #打开注释
-# 第16行  $UDPServerRun 514 #打开注释
-# 第74行  local3.* /var/log/haproxy.log #local3的路径
+
+第15行  $ModLoad imudp #打开注释
+
+第16行  $UDPServerRun 514 #打开注释
+
+第74行  local3.* /var/log/haproxy.log #local3的路径
 
 # 创建日志文件
+
 [root@localhost src]# touch /var/log/haproxy.log
 
 # 设置权限
+
 [root@localhost src]#  chown -R haproxy.haproxy /var/log/haproxy.log 
 
 # 启动日志服务
+
 [root@localhost src]# systemctl restart rsyslog.service
 
 
@@ -201,10 +240,13 @@ yum install zlib-devel -y
 配置HAproxy Conf：
 
 [root@localhost src]# vim /etc/haproxy/haproxy.cfg
+
 写入以下内容：
 
 # HAProxy 1.7 config for Splash. It assumes Splash instances are executed
+
 # on the same machine and connected to HAProxy using Docker links.
+
 global
     # raise it if necessary
     maxconn 512
