@@ -565,3 +565,10 @@ limit_conn slimits 5;
 - <http://www.ydcss.com/archives/466>
 - <http://blog.sae.sina.com.cn/archives/2107>
 - <http://www.nginx.cn/273.html>
+<<<<<<< HEAD
+=======
+
+
+Nginx启动脚本参考：
+https://www.nginx.com/resources/wiki/start/topics/examples/redhatnginxinit/
+>>>>>>> 1201ae086aef70e04893b878dd61149b7aa33607
