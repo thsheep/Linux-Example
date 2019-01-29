@@ -1,0 +1,12 @@
+kubectl get nodes
+kubectl get service
+kubectl get deploy
+kubectl get pods
+kubectl get pods –namespace=xxx
+kubectl get pods –namespace=kube-system
+kubectl get pods –all-namespaces -o wide
+kubectl describe pod <pod-name>
+kubectl describe deployment/<deployment-name>
+kubectl describe replicaset/<replicaset-name>
+kubectl logs <pod-name>
+kubectl logs <pod-name> –previous

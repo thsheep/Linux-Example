@@ -1,0 +1,48 @@
+pipeline {
+    environment {
+        REGISTRY_HOST = "harbor.XXXXXXX.com"
+        DEVELOPER_NAME = "darreng"
+        PROJECT_NAME = "order_ship_po"
+        TEST_IMAGE = "${env.REGISTRY_HOST}/${env.DEVELOPER_NAME}/${env.PROJECT_NAME}:${env.GIT_COMMIT}"
+        RELEASE_IMAGE = "${env.REGISTRY_HOST}/${env.DEVELOPER_NAME}/${env.PROJECT_NAME}:latest"
+        DEPLOYMENT_URL = "XXXXXXXX"
+    }
+    agent {
+        docker {
+                    image 'docker:latest'
+                }
+    }
+    stages {
+        stage('Build') {
+            steps {
+                script{
+                    sh "docker info"
+                    sh "docker login -u admin -p Harbor12345 ${env.REGISTRY_HOST}"
+                    echo "${env.TEST_IMAGE}"
+                    sh "docker build --pull -t ${env.TEST_IMAGE} ."
+                    sh "docker push ${env.TEST_IMAGE}"
+                }
+            }
+        }
+        stage('Release') {
+            steps {
+                   sh "docker info"
+                   sh "docker login -u admin -p Harbor12345 ${env.REGISTRY_HOST}"
+                   sh "docker pull ${env.TEST_IMAGE}"
+                   sh "docker tag ${env.TEST_IMAGE} ${env.RELEASE_IMAGE}"
+                   sh "docker push ${env.RELEASE_IMAGE}"
+            }
+        }
+    }
+    post {
+        always {
+            emailext to: "${env.DEVELOPER_NAME}@synnex.com",
+                     subject: '${ENV, var="JOB_NAME"}- 第${BUILD_NUMBER}次构建日志',
+                     body: '${FILE, path="email.html"}'
+        }
+        success {
+            sh "docker rmi ${env.RELEASE_IMAGE}"
+            sh "docker rmi ${env.TEST_IMAGE}"
+        }
+    }
+}

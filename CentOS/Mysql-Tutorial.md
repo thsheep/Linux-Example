@@ -3,6 +3,16 @@
 
 ## Mysql 常用命令
 
+为指定用户设置指定数据库权限
+
+允许WordPress用户拥有top_weibo数据库的所有权限,并允许从外网访问
+
+grant all privileges on top_weibo.* to 'wordpress'@'%'; 
+
+刷新权限
+
+flush privileges;
+
 
 
 ## 资料
